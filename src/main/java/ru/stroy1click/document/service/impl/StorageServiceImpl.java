@@ -4,7 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
+import ru.stroy1click.common.exception.NotFoundException;
 import ru.stroy1click.common.exception.StorageException;
 import ru.stroy1click.document.prop.StorageProperties;
 import ru.stroy1click.document.service.StorageService;
@@ -12,6 +14,8 @@ import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
+
+import java.util.Locale;
 
 @Slf4j
 @Service
@@ -21,6 +25,8 @@ public class StorageServiceImpl implements StorageService {
     private final S3Client s3Client;
 
     private final StorageProperties storageProperties;
+
+    private final MessageSource messageSource;
 
     @Override
     public String uploadDocument(byte[] pdf) {
@@ -35,7 +41,7 @@ public class StorageServiceImpl implements StorageService {
         } catch (S3Exception e) {
             log.error("S3 Service Error: [Code: {}] {}", e.awsErrorDetails().errorCode(), e.getMessage());
             throw new StorageException(e);
-        } catch (Exception e) {
+        }  catch (Exception e) {
             log.error("Unexpected error during document upload to S3", e);
             throw new StorageException(e);
         }
@@ -54,6 +60,12 @@ public class StorageServiceImpl implements StorageService {
                             .build());
 
             return objectAsBytes.asByteArray();
+        } catch (NoSuchKeyException e){
+            throw new NotFoundException(
+                    this.messageSource.getMessage("error.storage.not_found",
+                            new Object[]{link},
+                            Locale.getDefault())
+            );
         } catch (S3Exception e) {
             log.error("S3 Service Error: [Code: {}] {}", e.awsErrorDetails().errorCode(), e.getMessage());
             throw new StorageException(e);

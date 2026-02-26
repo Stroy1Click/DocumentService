@@ -94,7 +94,7 @@
         <td>${item.productTitle}</td>
         <td>${item.price}</td>
         <td>${item.quantity}</td>
-        <td>${item.unit}</td>
+        <td>${item.unit.title}</td>
     </tr>
 </#list>
 </table>

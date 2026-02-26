@@ -24,7 +24,7 @@ public class StorageConfig {
 
         return S3Client.builder()
                 .region(Region.of(this.storageProperties.getRegion()))
-                .endpointOverride(URI.create("https://s3.twcstorage.ru"))
+                .endpointOverride(URI.create("https://s3.ru-7.storage.selcloud.ru"))
                 .forcePathStyle(true)
                 .credentialsProvider(StaticCredentialsProvider.create(awsBasicCredentials))
                 .build();

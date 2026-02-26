@@ -53,7 +53,7 @@ redisson:
   password: password
 
 s3:
-  access-key: ZD7K2PPHZJWL30TO7VKZ
-  secret-key: d84E4EJCc7uzsVRERSECDe7bdyKCpBFqAMjeiJb6
-  region: ru-1
+  access-key:
+  secret-key:
+  region: ru-7
   bucket-name: stroy1click
