@@ -4,12 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.stroy1click.common.dto.DocumentType;
 import ru.stroy1click.common.event.OrderCreatedEvent;
-import ru.stroy1click.common.exception.NotFoundException;
+import ru.stroy1click.common.util.ExceptionUtils;
 import ru.stroy1click.document.dto.DocumentDto;
 import ru.stroy1click.document.entity.Document;
 import ru.stroy1click.document.mapper.DocumentMapper;
@@ -19,7 +18,6 @@ import ru.stroy1click.document.service.PdfGeneratorService;
 import ru.stroy1click.document.service.StorageService;
 
 import java.util.List;
-import java.util.Locale;
 
 @Slf4j
 @Service
@@ -35,19 +33,15 @@ public class DocumentServiceImpl implements DocumentService {
 
     private final DocumentMapper documentMapper;
 
-    private final MessageSource messageSource;
-
     @Override
     @Cacheable(value = "document", key = "#id")
     public DocumentDto get(Long id) {
-        return this.documentMapper.toDto(this.documentRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(
-                        this.messageSource.getMessage(
-                                "error.document.not_found",
-                                null,
-                                Locale.getDefault()
-                        )
-                )));
+        log.info("get {}", id);
+
+        Document document = this.documentRepository.findById(id)
+                .orElseThrow(() -> ExceptionUtils.notFound("error.document.not_found", id));
+
+        return this.documentMapper.toDto(document);
     }
 
     @Override
@@ -80,16 +74,9 @@ public class DocumentServiceImpl implements DocumentService {
     public void delete(Long id) {
         log.info("deleteByLink {}", id);
 
-        Document foundDocument = this.documentRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(
-                        this.messageSource.getMessage(
-                                "error.document.not_found",
-                                null,
-                                Locale.getDefault()
-                        )
-                )
-        );
+        Document document = this.documentRepository.findById(id)
+                .orElseThrow(() -> ExceptionUtils.notFound("error.document.not_found", id));
 
-        this.documentRepository.delete(foundDocument);
+        this.documentRepository.delete(document);
     }
 }

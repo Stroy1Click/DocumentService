@@ -30,7 +30,7 @@ public class StorageServiceImpl implements StorageService {
 
     @Override
     public String uploadDocument(byte[] pdf) {
-        log.info("uploadImage");
+        log.info("uploadDocument");
         String fileName = System.currentTimeMillis() + "_" + "document.pdf";
         try {
             this.s3Client.putObject(PutObjectRequest.builder()
