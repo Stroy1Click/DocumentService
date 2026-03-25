@@ -17,8 +17,14 @@ public class AdviceController {
     private final MessageSource messageSource;
 
     @ExceptionHandler(NotFoundException.class)
-    public ProblemDetail problemDetail(NotFoundException exception){
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
+    public ProblemDetail handleException(NotFoundException exception){
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.NOT_FOUND, this.messageSource.getMessage(
+                        exception.getMessageKey(),
+                        exception.getArgs(),
+                        Locale.getDefault()
+                )
+        );
         problemDetail.setTitle(
                 this.messageSource.getMessage(
                         "error.title.not_found",
