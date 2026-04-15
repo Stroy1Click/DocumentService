@@ -38,6 +38,9 @@ spring:
       group-id: document-service
       properties:
         spring.json.trusted.packages: ru.stroy1click.common.*
+  threads:
+    virtual:
+      enabled: true
 
 otel:
   sdk:
